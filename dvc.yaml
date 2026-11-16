@@ -1,0 +1,21 @@
+
+stages:
+
+  data_ingestion:
+    cmd: py data_ingestion.py
+    deps:
+      - data_ingestion.py
+    outs:
+      - data/ingested/bank_data_injested.csv
+
+  model_training:
+    cmd: py train.py
+    deps:
+      - train.py
+      - data/feature_selected/feature_selected.csv
+    params:
+      - data.target_column
+      - training
+      - model
+    outs:
+      - models/best_model.pkl

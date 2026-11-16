@@ -1,0 +1,14 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: py data_ingestion.py
+    deps:
+    - path: data_ingestion.py
+      hash: md5
+      md5: 5630940c1f75b03e6c40aaed07be6abc
+      size: 1482
+    outs:
+    - path: data/ingested/bank_data_injested.csv
+      hash: md5
+      md5: 4a0360af3f897722cc88d7c7b32d0cca
+      size: 51634
