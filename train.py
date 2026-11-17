@@ -19,7 +19,7 @@ logger= logging.getLogger(__name__)
 
 try:
     logging.info('loading dataset')
-    df= pd.read_csv('../data/cleaned_dataset/cleaned.csv')
+    df= pd.read_csv('data/feature_selected/ feature_selected.csv')
     logging.info('Dataset loaded successfully')
     X= df.drop('Medical Insurance Expenses', axis= 1)
     y= df['Medical Insurance Expenses']
@@ -27,7 +27,7 @@ try:
     num_cols= X.select_dtypes(include= ['int', 'float']).columns
     cat_cols= X.select_dtypes(include= ['object']).columns
     num_pipeline= Pipeline([
-        ('impute', SimpleImputer(strategy= 'median'))
+        ('impute', SimpleImputer(strategy= 'median')),
         ('scaling', StandardScaler())
     ])
     cat_pipeline= Pipeline([
@@ -35,7 +35,7 @@ try:
         ('encoding', OneHotEncoder())
     ])
     preprocessing= ColumnTransformer([
-        ('num', num_pipeline, num_cols)
+        ('num', num_pipeline, num_cols),
         ('cat', cat_pipeline, cat_cols)
     ])
     models= {
@@ -45,14 +45,16 @@ try:
         'XG_Boost': XGBRegressor()
     }
 
-    mlflow.set_tracking_uri('https://localhost:5000')
+    mlflow.set_tracking_uri('http://127.0.0.1:5000')
+    print("MLflow Tracking URI:", mlflow.get_tracking_uri())
+
     mlflow.set_experiment('bank_insurence')
 
     best_model= None
     best_model_name= None
     best_rmse= float('inf')
 
-    for model_name, model in models.item():
+    for model_name, model in models.items():
         pipeline= Pipeline([
             ('preprocessing', preprocessing),
             ('model', model)
@@ -67,8 +69,8 @@ try:
             rmse= root_mean_squared_error(y_test, y_pred)
             r2= r2_score(y_test, y_pred)
 
-            logger.info('Evaluation metrics calcu;ated successfully')
-            mlflow.log_params('model_name', model_name)
+            logger.info('Evaluation metrics calculated successfully')
+            mlflow.log_param('model_name', model_name)
             mlflow.log_metric('mae', mae)
             mlflow.log_metric('mse', mse)
             mlflow.log_metric('rmse', rmse)
